@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>UNIR Test Identidad uPort</title>
+    <style>
+            table {
+                border-collapse: collapse;
+            }
+            
+            table, td, th {
+                border: 2px solid black;
+            }
+    </style>
+    <!-- load coonect from CDN -->
+    <script src="https://unpkg.com/uport-connect/dist/uport-connect.js">
+    </script>
+    <script>
+      $( function() {
+         $( "#datepicker" ).datepicker();
+      });
+    </script>
+    <script type="text/javascript">
+            
+      //////////////////////////////////////////////////
+      // 0. DEFINE SOME INITIAL VALUES AND CLEAN STORAGE
+      //////////////////////////////////////////////////
+      var connectState
+      function initialize() {
+        // initialize expiration field
+        document.getElementById('datepicker').value = (new Date()).toLocaleDateString("en-US")
+        // remove local storage
+        window.localStorage.clear()
+        uport.reset()
+        connectState = JSON.parse(JSON.parse(localStorage.getItem('connectState')))
+        document.getElementById('applicationdid').textContent = connectState.keypair.did
+        document.getElementById('applicationdprivatekey').textContent = connectState.keypair.privateKey
+      }  
+      // Configure connect object 
+      const Connect = window.uportconnect
+      const uport = new Connect()
+      // const uport = new Connect('DAPP-NAME', {network: 'network-id or network-hex or blank'})
+
+      /////////////////////////////////////////////////
+      // 1. ASK FOR SOME CREDENTIAL TO LOGIN
+      ////////////////////////////////////////////////
+      function requestDisclosure() {
+        
+        // document.getElementById('msg').value = "Give the module a second to load..."
+        uport.requestDisclosure({
+              requested: ['name', 'avatar', 'country', 'phone'],
+              notifications: document.getElementById("usepush").checked
+        })
+        uport.onResponse('disclosureReq').then(credential_to_login => {
+          const address = uport.address
+          const did = uport.did
+          console.log(credential_to_login)
+          document.getElementById('jsonresult').textContent = JSON.stringify(credential_to_login, null, 2);
+          //fill form fields with the appropiate data
+          document.getElementById('userdid').value = credential_to_login.payload.did
+          document.getElementById('username').value = credential_to_login.payload.name
+          document.getElementById('usercity').value = credential_to_login.payload.country
+          document.getElementById('userphone').value = credential_to_login.payload.phone
+          
+        })
+      }
+
+      //////////////////////////////////////////////////
+      // 2. ISSUE A CREDENTIAL
+      //////////////////////////////////////////////////
+      function sendVerification() {
+        const unsignedClaim = {
+                exp: Date.parse(document.getElementById('datepicker').value),
+                claim: {[document.getElementById('credential').value]: {
+                            'Apto para pasar a Master Blockchain': true,
+                            'document': document.getElementById('documento').value,
+                        }
+                }
+        }
+
+        document.getElementById('unsignedClaim').textContent = JSON.stringify(unsignedClaim, null, 2)
+
+        // ==> INTRODUZCA AQUI EL CÓDIGO A EJECUTAR, SUSTITUYENDO LAS XXXXXXXXXXXXXX POR LOS METODOS A INVOCAR CON SUS PARAMETROS ADECUADOS (OPTIMO: 2 LINEAS)
+                
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.then(signedCredential => {
+        //
+        //       console.log(signedCredential)
+        //       document.getElementById('acceptedClaim').textContent = JSON.stringify(signedCredential, null, 2); // muestra el resultado en la tabla
+        // })
+      }
+
+      //////////////////////////////////////////////////
+      // 3. VERIFY A CREDENTIAL
+      //////////////////////////////////////////////////
+      function requestVerification() {
+        // ==> INTRODUZCA AQUI EL CÓDIGO A EJECUTAR, SUSTITUYENDO LAS XXXXXXXXXXXXXX POR LOS METODOS A INVOCAR CON SUS PARAMETROS ADECUADOS (OPTIMO: 2 LINEAS)
+
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.then(payload => {
+        // 
+        //      console.log(payload)
+        //      document.getElementById('requestVerificationResponse').textContent = JSON.stringify(payload, null, 2); // muestra el resultado en la tabla
+        // })
+      }
+
+      //////////////////////////////////////////////////
+      // 4. SIGN A CREDENTIAL
+      //////////////////////////////////////////////////
+      function requestVerificationSignature() {
+        const unsignedClaim = {
+                claim: JSON.parse(document.getElementById('claimtosign').value),
+        }
+
+        // ==> INTRODUZCA AQUI EL CÓDIGO A EJECUTAR, SUSTITUYENDO LAS XXXXXXXXXXXXXX POR LOS METODOS A INVOCAR CON SUS PARAMETROS ADECUADOS (OPTIMO: 2 LÍNEAS)
+       
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.then(jwt => {
+        //     console.log('jwt:', jwt)
+        //     document.getElementById('requestVerificationSignatureResponse').textContent = JSON.stringify(jwt, null, 2); // muestra el resultado en la tabla
+        // })
+      }
+
+    </script>
+  </head>
+  <body onload="initialize()">
+    <span style="color: blue;font-weight:bold">UNIR BlockchainLab - Uso de Identidad uPort</span>
+    <br/>
+    Application DID: 
+    <span style="font-weight:bold"><div id="applicationdid"></div></span>
+    Application Private Key: 
+    <span style="font-weight:bold"><div id="applicationdprivatekey"></div></span>
+    <br/>
+    <br/>
+    <table>
+      <tr>
+        <td colspan="2">
+          <span style="font-weight:bold">DO LOGIN INFORMATION REQUESTING FOR CREDENTIALS</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Press to login and Get User Data <br/>
+          <input type="button" value="requestDisclosure" onclick="requestDisclosure()">
+        </td>
+        <td>
+          Si quiere recibir todas las notificaciones<br/>Marque la casilla<br/> 
+          <input type="checkbox" id="usepush" checked>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <form>
+            <image src="" id="useravatar"/><br>
+            DID: <input id="userdid" type="text"/><br/> 
+            Nombre/name: <input id="username" type="text"/><br/>
+            Ciudad/country: <input id="usercity" type="text"/><br/>
+            Teléfono/phone: <input id="userphone" type="text"/><br/>
+          </form>                                    
+        </td>
+        <td>
+          <pre><div id="jsonresult"></div></pre>                    
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="font-weight:bold">ISSUE A NEW CREDENTIAL</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Rellena los datos de la credencial que se quiere emitir:<br/>
+          Credential Issuer: <input id="credential" type="text" value="Organizacion"/><br/>
+          Expiration: <input type="text" id="datepicker" value=""><br/>
+          Document: <input type="text" id="documento" value="documento"><br/>
+          <br/>
+        </td>  
+        <td>
+          <pre><div id="unsignedClaim"></div></pre>                            
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="button" value="sendVerification" onclick="sendVerification()">
+        </td>
+        <td>
+          <pre><div id="acceptedClaim"></div></pre>                            
+        </td>        
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="font-weight:bold">REQUEST VERIFICATION OF A CREDENTIAL</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Rellena los datos de la credencial que se quiere verificar
+          Credential Issuer: <input id="credentialRequested" type="text" value="Organizacion"/><br/>
+          <input type="button" value="requestVerification" onclick="requestVerification()">
+        </td>
+        <td>
+          <pre><div id="requestVerificationResponse"></div></pre>                            
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="font-weight:bold">REQUEST A SIGNED VERIFICATION</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <textarea id="claimtosign" rows="10" cols="50">
+{"UNIR Blockchain Identidad Lab": {
+   "Apto para pasar a Master Blockchain": true,
+   "document": "El alumno ha superado las pruebas con buena actitud."
+   }
+}
+          </textarea><br/>
+          <input type="button" value="requestVerificationSignature" onclick="requestVerificationSignature()">
+        </td>
+        <td>
+          <pre><div id="requestVerificationSignatureResponse"></div></pre>                            
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
