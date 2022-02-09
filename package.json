@@ -1,0 +1,25 @@
+{
+  "name": "blockchainlab2-identidad-1",
+  "version": "1.0.0",
+  "description": "## Práctica de Identidad Digital",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonatangf/ebc-digital-identity.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonatangf/ebc-digital-identity/issues"
+  },
+  "homepage": "https://github.com/jonatangf/ebc-digital-identity#readme",
+  "dependencies": {
+    "express": "^4.17.2",
+    "ngrok": "^4.3.0",
+    "path": "^0.12.7"
+  }
+}
