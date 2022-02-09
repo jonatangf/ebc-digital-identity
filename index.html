@@ -84,12 +84,11 @@
 
         // ==> INTRODUZCA AQUI EL CÓDIGO A EJECUTAR, SUSTITUYENDO LAS XXXXXXXXXXXXXX POR LOS METODOS A INVOCAR CON SUS PARAMETROS ADECUADOS (OPTIMO: 2 LINEAS)
                 
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.then(signedCredential => {
-        //
-        //       console.log(signedCredential)
-        //       document.getElementById('acceptedClaim').textContent = JSON.stringify(signedCredential, null, 2); // muestra el resultado en la tabla
-        // })
+        uport.sendVerification(unsignedClaim);
+        uport.onResponse('sendVerification').then(signedCredential => {
+              console.log(signedCredential)
+              document.getElementById('acceptedClaim').textContent = JSON.stringify(signedCredential, null, 2); // muestra el resultado en la tabla
+        });
       }
 
       //////////////////////////////////////////////////
@@ -98,12 +97,11 @@
       function requestVerification() {
         // ==> INTRODUZCA AQUI EL CÓDIGO A EJECUTAR, SUSTITUYENDO LAS XXXXXXXXXXXXXX POR LOS METODOS A INVOCAR CON SUS PARAMETROS ADECUADOS (OPTIMO: 2 LINEAS)
 
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.then(payload => {
-        // 
-        //      console.log(payload)
-        //      document.getElementById('requestVerificationResponse').textContent = JSON.stringify(payload, null, 2); // muestra el resultado en la tabla
-        // })
+        uport.requestDisclosure({verified: [document.getElementById('credentialRequested').textContent]});
+        uport.onResponse('requestDisclosure').then(payload => {
+             console.log(payload)
+             document.getElementById('requestVerificationResponse').textContent = JSON.stringify(payload, null, 2); // muestra el resultado en la tabla
+        });
       }
 
       //////////////////////////////////////////////////
@@ -115,12 +113,12 @@
         }
 
         // ==> INTRODUZCA AQUI EL CÓDIGO A EJECUTAR, SUSTITUYENDO LAS XXXXXXXXXXXXXX POR LOS METODOS A INVOCAR CON SUS PARAMETROS ADECUADOS (OPTIMO: 2 LÍNEAS)
-       
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.then(jwt => {
-        //     console.log('jwt:', jwt)
-        //     document.getElementById('requestVerificationSignatureResponse').textContent = JSON.stringify(jwt, null, 2); // muestra el resultado en la tabla
-        // })
+        
+        uport.requestVerificationSignature(unsignedClaim);
+        uport.onResponse("requestVerificationSignature").then(jwt => {
+            console.log('jwt:', jwt)
+            document.getElementById('requestVerificationSignatureResponse').textContent = JSON.stringify(jwt, null, 2); // muestra el resultado en la tabla
+        })
       }
 
     </script>
