@@ -46,13 +46,12 @@
       /////////////////////////////////////////////////
       // 1. ASK FOR SOME CREDENTIAL TO LOGIN
       ////////////////////////////////////////////////
-      function requestDisclosure() {
-        
+      function requestDisclosure() {        
         // document.getElementById('msg').value = "Give the module a second to load..."
         uport.requestDisclosure({
               requested: ['name', 'avatar', 'country', 'phone'],
               notifications: document.getElementById("usepush").checked
-        })
+        });
         uport.onResponse('disclosureReq').then(credential_to_login => {
           const address = uport.address
           const did = uport.did
@@ -63,8 +62,7 @@
           document.getElementById('username').value = credential_to_login.payload.name
           document.getElementById('usercity').value = credential_to_login.payload.country
           document.getElementById('userphone').value = credential_to_login.payload.phone
-          
-        })
+        });
       }
 
       //////////////////////////////////////////////////
@@ -83,11 +81,13 @@
         document.getElementById('unsignedClaim').textContent = JSON.stringify(unsignedClaim, null, 2)
 
         // ==> INTRODUZCA AQUI EL CÓDIGO A EJECUTAR, SUSTITUYENDO LAS XXXXXXXXXXXXXX POR LOS METODOS A INVOCAR CON SUS PARAMETROS ADECUADOS (OPTIMO: 2 LINEAS)
-                
         uport.sendVerification(unsignedClaim);
         uport.onResponse('sendVerification').then(signedCredential => {
               console.log(signedCredential)
               document.getElementById('acceptedClaim').textContent = JSON.stringify(signedCredential, null, 2); // muestra el resultado en la tabla
+        })
+        .catch(e => {
+          alert(JSON.stringify(e));
         });
       }
 
@@ -96,11 +96,12 @@
       //////////////////////////////////////////////////
       function requestVerification() {
         // ==> INTRODUZCA AQUI EL CÓDIGO A EJECUTAR, SUSTITUYENDO LAS XXXXXXXXXXXXXX POR LOS METODOS A INVOCAR CON SUS PARAMETROS ADECUADOS (OPTIMO: 2 LINEAS)
-
         uport.requestDisclosure({verified: [document.getElementById('credentialRequested').textContent]});
-        uport.onResponse('requestDisclosure').then(payload => {
-             console.log(payload)
-             document.getElementById('requestVerificationResponse').textContent = JSON.stringify(payload, null, 2); // muestra el resultado en la tabla
+        uport.onResponse('disclosureReq').then(payload => {
+            console.log(payload);
+            document.getElementById('requestVerificationResponse').textContent = JSON.stringify(payload, null, 2); // muestra el resultado en la tabla
+        }).catch(e => {
+            alert(JSON.stringify(e));
         });
       }
 
@@ -108,17 +109,22 @@
       // 4. SIGN A CREDENTIAL
       //////////////////////////////////////////////////
       function requestVerificationSignature() {
+        let sub = JSON.parse(document.getElementById('requestVerificationResponse').textContent).payload.did;
+
         const unsignedClaim = {
-                claim: JSON.parse(document.getElementById('claimtosign').value),
+          claim: JSON.parse(document.getElementById('claimtosign').value)
         }
 
         // ==> INTRODUZCA AQUI EL CÓDIGO A EJECUTAR, SUSTITUYENDO LAS XXXXXXXXXXXXXX POR LOS METODOS A INVOCAR CON SUS PARAMETROS ADECUADOS (OPTIMO: 2 LÍNEAS)
         
-        uport.requestVerificationSignature(unsignedClaim);
-        uport.onResponse("requestVerificationSignature").then(jwt => {
+        uport.requestVerificationSignature(unsignedClaim, sub);
+        uport.onResponse('verSigReq').then(jwt => {
             console.log('jwt:', jwt)
             document.getElementById('requestVerificationSignatureResponse').textContent = JSON.stringify(jwt, null, 2); // muestra el resultado en la tabla
-        })
+        }).catch(e => {
+          console.log(e);
+          alert(JSON.stringify(e));
+        });
       }
 
     </script>
